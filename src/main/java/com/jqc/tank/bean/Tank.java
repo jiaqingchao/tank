@@ -2,6 +2,7 @@ package com.jqc.tank.bean;
 
 import com.jqc.tank.TankFrame;
 import com.jqc.tank.common.*;
+import com.jqc.tank.strategy.FireStrategy;
 
 import java.awt.*;
 import java.util.Random;
@@ -21,6 +22,8 @@ public class Tank {
     private TankFrame tf;
     private Rectangle rectangle = new Rectangle();
     private Random random = new Random();
+
+    private FireStrategy fs = null;
 
     public Tank(int x, int y, Dir dir, Group group, TankFrame tf) {
         this.x = x;
@@ -52,6 +55,14 @@ public class Tank {
 
     public int getY() {
         return y;
+    }
+
+    public Dir getDir() {
+        return dir;
+    }
+
+    public TankFrame getTf() {
+        return tf;
     }
 
     public boolean isLiving() {
@@ -107,44 +118,27 @@ public class Tank {
         if(this.group != Group.AI){
             return;
         }
+
         // AI 随机发射子弹
         if(random.nextInt(100) > 95){
-            this.fire();
+            if(fs == null){
+                initFireStrategy();
+            }
+            fs.fire(this);
         }
 
         //AI 随机改变方向
-        if(random.nextInt(100) > 95)
+        if(random.nextInt(100) > 95){
             randomDir();
-    }
-    public void fire(){
-        int bX = 0;
-        int bY = 0;
-
-        switch (this.dir){
-            case DOWN:
-                bY = this.y + Tank.HEIGHT;
-                bX = this.x + Tank.WIDTH/2 - Bullet.WIDTH/2;
-                break;
-            case UP:
-                bY = this.y - Bullet.HEIGHT;
-                bX = this.x + Tank.WIDTH/2 - Bullet.WIDTH/2;
-                break;
-            case LEFT:
-                bY = this.y + Tank.HEIGHT/2 - Bullet.HEIGHT/2;
-                bX = this.x - Bullet.WIDTH;
-                break;
-            case RIGHT:
-                bX = this.x + Tank.WIDTH;
-                bY = this.y + Tank.HEIGHT/2 - Bullet.HEIGHT/2;
-                break;
-            default:
-                break;
         }
+    }
 
-        tf.bullets.add(new Bullet(bX, bY, this.dir, this.group));
-
-        if(this.group == Group.RED){
-            new Thread(()->new Audio("audio/tank_fire.wav").play()).start();
+    private void initFireStrategy() {
+        String defaultFSName = PropertyMgr.getString(CONSTANTS.PROPERTY_DEFAULT_FIRE);
+        try {
+            fs = (FireStrategy) Class.forName(defaultFSName).getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

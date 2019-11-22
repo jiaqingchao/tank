@@ -7,6 +7,8 @@ import com.jqc.tank.common.CONSTANTS;
 import com.jqc.tank.common.Dir;
 import com.jqc.tank.common.Group;
 import com.jqc.tank.common.PropertyMgr;
+import com.jqc.tank.strategy.DefaultFireStrategy;
+import com.jqc.tank.strategy.SquareFireStrategy;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -184,7 +186,7 @@ public class TankFrame extends Frame {
                     bD = false;
                     break;
                 case KeyEvent.VK_SPACE:
-                    redTank.fire();
+                    SquareFireStrategy.getInstance().fire(redTank);
                 default:
                     break;
             }

@@ -21,7 +21,7 @@ public class Bullet {
 
     private Rectangle rectangle = new Rectangle();
 
-    public Bullet(int x, int y, Dir dir, Group group) {
+    public Bullet(int x, int y, Dir dir, Group group, TankFrame tf) {
         this.x = x;
         this.y = y;
         this.dir = dir;
@@ -31,6 +31,8 @@ public class Bullet {
         rectangle.y = this.y;
         rectangle.width = Tank.WIDTH;
         rectangle.height = Tank.HEIGHT;
+
+        tf.bullets.add(this);
     }
 
     public boolean isLiving() {

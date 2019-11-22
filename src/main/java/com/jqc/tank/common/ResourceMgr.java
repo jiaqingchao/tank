@@ -7,6 +7,8 @@ import javax.imageio.ImageIO;
 
 public class ResourceMgr {
 
+	private ResourceMgr(){}
+
 	public static BufferedImage aiTankL, aiTankU, aiTankR, aiTankD;
 	public static BufferedImage redTankL, redTankU, redTankR, redTankD;
 	public static BufferedImage bulletL, bulletU, bulletR, bulletD;

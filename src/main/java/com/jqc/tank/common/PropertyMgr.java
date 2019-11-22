@@ -5,30 +5,23 @@ import java.util.Properties;
 
 public class PropertyMgr {
 
-    public static Properties properties = null;
+    private PropertyMgr(){}
 
-    private static void loadProperties() {
+    public static Properties properties = new Properties();
+
+    static {
         try {
-
-            properties = new Properties();
             properties.load(PropertyMgr.class.getClassLoader().getResourceAsStream("config.properties"));
-
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    public static String get(String key){
-        if(properties == null){
-            loadProperties();
-        }
+    public static String getString(String key){
         return properties.getProperty(key);
     }
 
     public static int getInt(String key){
-        if(properties == null){
-            loadProperties();
-        }
         return Integer.valueOf(properties.getProperty(key));
 
     }
