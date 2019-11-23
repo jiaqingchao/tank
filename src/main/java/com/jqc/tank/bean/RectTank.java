@@ -8,7 +8,7 @@ import com.jqc.tank.strategy.FireStrategy;
 import java.awt.*;
 import java.util.Random;
 
-public class Tank extends BaseTank {
+public class RectTank extends BaseTank {
     private int x, y;
     private Dir dir = Dir.DOWN;
     private int speed = PropertyMgr.getInt(CONSTANTS.PROPERTY_TANK_SPEED);
@@ -20,13 +20,13 @@ public class Tank extends BaseTank {
     private boolean living = true;
     private Group group;
 
-    public TankFrame tf;
+    private TankFrame tf;
     private Rectangle rectangle = new Rectangle();
     private Random random = new Random();
 
     private FireStrategy fs = null;
 
-    public Tank(int x, int y, Dir dir, Group group, TankFrame tf) {
+    public RectTank(int x, int y, Dir dir, Group group, TankFrame tf) {
         this.x = x;
         this.y = y;
         this.dir = dir;
@@ -38,8 +38,8 @@ public class Tank extends BaseTank {
 
         rectangle.x = this.x;
         rectangle.y = this.y;
-        rectangle.width = Tank.WIDTH;
-        rectangle.height = Tank.HEIGHT;
+        rectangle.width = RectTank.WIDTH;
+        rectangle.height = RectTank.HEIGHT;
     }
 
     public void setDir(Dir dir) {
@@ -93,22 +93,11 @@ public class Tank extends BaseTank {
     }
 
     private void paintTank(Graphics g) {
-        switch (this.dir){
-            case LEFT :
-                g.drawImage(this.group == Group.RED ? ResourceMgr.redTankL : ResourceMgr.aiTankL, this.x, this.y,null);
-                break;
-            case UP :
-                g.drawImage(this.group == Group.RED ? ResourceMgr.redTankU : ResourceMgr.aiTankU, this.x, this.y,null);
-                break;
-            case RIGHT:
-                g.drawImage(this.group == Group.RED ? ResourceMgr.redTankR : ResourceMgr.aiTankR, this.x, this.y,null);
-                break;
-            case DOWN:
-                g.drawImage(this.group == Group.RED ? ResourceMgr.redTankD : ResourceMgr.aiTankD, this.x, this.y,null);
-                break;
-            default:
-                break;
-        }
+        Color c = g.getColor();
+        g.setColor(group == Group.RED?Color.RED:Color.BLUE);
+        g.fillRect(x, y, 50,50);
+        g.setColor(c);
+
     }
 
     private void randomFireAndDir() {
@@ -118,9 +107,9 @@ public class Tank extends BaseTank {
 
         // AI 随机发射子弹
         if(random.nextInt(100) > 95){
-          /*  if(fs == null){
-                initFireStrategy();
-            }*/
+//            if(fs == null){
+//                initFireStrategy();
+//            }
             fire();
         }
 
@@ -154,7 +143,7 @@ public class Tank extends BaseTank {
                 break;
         }
 
-        this.tf.gf.ceateBullet(bX, bY, this.dir, this.getGroup(), this.getTf());
+        tf.gf.ceateBullet(bX, bY, Dir.RIGHT, this.getGroup(), this.getTf());
 
         if(this.getGroup() == Group.RED){
             new Thread(()->new Audio("audio/tank_fire.wav").play()).start();
@@ -229,8 +218,8 @@ public class Tank extends BaseTank {
 
         if(this.x < 2) this.x = 2;
         if(this.y < 28) this.y = 28;
-        if(this.x > TankFrame.WIDTH - Tank.WIDTH - 2) this.x = TankFrame.WIDTH - Tank.WIDTH - 2;
-        if(this.y > TankFrame.HEIGHT - Tank.HEIGHT - 2) this.y = TankFrame.HEIGHT - Tank.HEIGHT - 2;
+        if(this.x > TankFrame.WIDTH - RectTank.WIDTH - 2) this.x = TankFrame.WIDTH - RectTank.WIDTH - 2;
+        if(this.y > TankFrame.HEIGHT - RectTank.HEIGHT - 2) this.y = TankFrame.HEIGHT - RectTank.HEIGHT - 2;
     }
 
 }

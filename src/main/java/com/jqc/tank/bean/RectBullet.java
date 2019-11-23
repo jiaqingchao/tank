@@ -5,11 +5,10 @@ import com.jqc.tank.adstractFactory.BaseBullet;
 import com.jqc.tank.adstractFactory.BaseTank;
 import com.jqc.tank.common.*;
 
-import java.awt.Rectangle;
-import java.awt.Graphics;
+import java.awt.*;
 
 
-public class Bullet extends BaseBullet {
+public class RectBullet extends BaseBullet {
 
     private int x;
     private int y;
@@ -24,7 +23,7 @@ public class Bullet extends BaseBullet {
     private Rectangle rectangle = new Rectangle();
     private TankFrame tf;
 
-    public Bullet(int x, int y, Dir dir, Group group, TankFrame tf) {
+    public RectBullet(int x, int y, Dir dir, Group group, TankFrame tf) {
         this.x = x;
         this.y = y;
         this.dir = dir;
@@ -59,22 +58,10 @@ public class Bullet extends BaseBullet {
     }
 
     private void paintBullet(Graphics g) {
-        switch (this.dir){
-            case LEFT :
-                g.drawImage(ResourceMgr.bulletL, this.x, this.y,null);
-                break;
-            case UP :
-                g.drawImage(ResourceMgr.bulletU, this.x, this.y,null);
-                break;
-            case RIGHT:
-                g.drawImage(ResourceMgr.bulletR, this.x, this.y,null);
-                break;
-            case DOWN:
-                g.drawImage(ResourceMgr.bulletD, this.x, this.y,null);
-                break;
-            default:
-                break;
-        }
+        Color c = g.getColor();
+        g.setColor(Color.YELLOW);
+        g.fillRect(x, y, 20,20);
+        g.setColor(c);
     }
 
     public void move() {
@@ -112,7 +99,6 @@ public class Bullet extends BaseBullet {
         }
     }
 
-    @Override
     public void collisionWidth(BaseTank tank) {
 
         if(this.group == tank.getGroup()){

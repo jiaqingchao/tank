@@ -1,18 +1,13 @@
 package com.jqc.tank.strategy;
 
+import com.jqc.tank.adstractFactory.BaseTank;
 import com.jqc.tank.bean.Audio;
 import com.jqc.tank.bean.Bullet;
 import com.jqc.tank.bean.Tank;
+import com.jqc.tank.common.Dir;
 import com.jqc.tank.common.Group;
 
 public class DefaultFireStrategy implements FireStrategy<Tank>{
-    private final static DefaultFireStrategy INSTANCE = new DefaultFireStrategy();
-
-    private DefaultFireStrategy(){}
-
-    public static DefaultFireStrategy getInstance(){
-        return INSTANCE;
-    }
 
     @Override
     public void fire(Tank tank) {
@@ -40,7 +35,7 @@ public class DefaultFireStrategy implements FireStrategy<Tank>{
                 break;
         }
 
-        new Bullet(bX, bY, tank.getDir(), tank.getGroup(), tank.getTf());
+        tank.tf.gf.ceateBullet(bX, bY, Dir.RIGHT, tank.getGroup(), tank.getTf());
 
         if(tank.getGroup() == Group.RED){
             new Thread(()->new Audio("audio/tank_fire.wav").play()).start();

@@ -13,6 +13,7 @@ public class ResourceMgr {
 	public static BufferedImage redTankL, redTankU, redTankR, redTankD;
 	public static BufferedImage bulletL, bulletU, bulletR, bulletD;
 	public static BufferedImage[] explodes = new BufferedImage[16];
+	public static BufferedImage[] rectExplodes = new BufferedImage[16];
 
 	static {
 		try {

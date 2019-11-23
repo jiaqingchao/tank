@@ -1,5 +1,6 @@
 package com.jqc.tank;
 
+import com.jqc.tank.adstractFactory.*;
 import com.jqc.tank.bean.Explode;
 import com.jqc.tank.bean.Bullet;
 import com.jqc.tank.bean.Tank;
@@ -7,7 +8,6 @@ import com.jqc.tank.common.CONSTANTS;
 import com.jqc.tank.common.Dir;
 import com.jqc.tank.common.Group;
 import com.jqc.tank.common.PropertyMgr;
-import com.jqc.tank.strategy.DefaultFireStrategy;
 import com.jqc.tank.strategy.SquareFireStrategy;
 
 import java.awt.*;
@@ -24,11 +24,13 @@ public class TankFrame extends Frame {
     public static int WIDTH = PropertyMgr.getInt(CONSTANTS.PROPERTY_GAME_WINDOW_WIDTH);
     public static int HEIGHT = PropertyMgr.getInt(CONSTANTS.PROPERTY_GAME_WINDOW_HEIGHT);
 
-    public List<Tank> tanks = new ArrayList<>();
-    public List<Bullet> bullets = new ArrayList<>();
-    public List<Explode> explodes = new ArrayList<>();
+    public List<BaseTank> tanks = new ArrayList<>();
+    public List<BaseBullet> bullets = new ArrayList<>();
+    public List<BaseExplode> explodes = new ArrayList<>();
 
-    public Tank redTank = new Tank(100,100,Dir.DOWN, Group.RED, this);
+    public GameFactory gf = DefaultFactory.getInstance();
+
+    public BaseTank redTank = gf.ceateTank(100,100,Dir.DOWN, Group.RED, this);
 
     public TankFrame(){
 
@@ -106,34 +108,34 @@ public class TankFrame extends Frame {
     }
 
     private void paintExplode(Graphics g) {
-        for(ListIterator<Explode> blastIterator = explodes.listIterator(); blastIterator.hasNext();){
-            Explode explode = blastIterator.next();
+        for(ListIterator<BaseExplode> blastIterator = explodes.listIterator(); blastIterator.hasNext();){
+            BaseExplode explode = blastIterator.next();
             explode.paint(g);
             if(!explode.isLiving()) blastIterator.remove();
         }
     }
 
     private void paintBullet(Graphics g) {
-        for(ListIterator<Bullet> bulletIterator = bullets.listIterator(); bulletIterator.hasNext();){
-            Bullet bullet = bulletIterator.next();
+        for(ListIterator<BaseBullet> bulletIterator = bullets.listIterator(); bulletIterator.hasNext();){
+            BaseBullet bullet = bulletIterator.next();
             bullet.paint(g);
             if(!bullet.isLiving()) bulletIterator.remove();
         }
     }
 
     private void paintTank(Graphics g) {
-        for(ListIterator<Tank> tankListIterator = tanks.listIterator(); tankListIterator.hasNext();){
-            Tank tank = tankListIterator.next();
+        for(ListIterator<BaseTank> tankListIterator = tanks.listIterator(); tankListIterator.hasNext();){
+            BaseTank tank = tankListIterator.next();
             tank.paint(g);
             if(!tank.isLiving()) tankListIterator.remove(); // ConcurrentModificationException   //异步新增tank,数量对不上，导致报错
         }
     }
 
     private void collisonCheck() {
-        for(ListIterator<Bullet> bulletIterator = bullets.listIterator(); bulletIterator.hasNext();){
-            Bullet bullet = bulletIterator.next();
+        for(ListIterator<BaseBullet> bulletIterator = bullets.listIterator(); bulletIterator.hasNext();){
+            BaseBullet bullet = bulletIterator.next();
             bullet.collisionWidth(redTank);
-            for(ListIterator<Tank> tankListIterator = tanks.listIterator(); tankListIterator.hasNext();){
+            for(ListIterator<BaseTank> tankListIterator = tanks.listIterator(); tankListIterator.hasNext();){
                 bullet.collisionWidth(tankListIterator.next());
             }
 
@@ -186,14 +188,14 @@ public class TankFrame extends Frame {
                     bD = false;
                     break;
                 case KeyEvent.VK_SPACE:
-                    SquareFireStrategy.getInstance().fire(redTank);
+                    redTank.fire();
                 default:
                     break;
             }
             setMainTankDir(redTank);
         }
 
-        private void setMainTankDir(Tank tank){
+        private void setMainTankDir(BaseTank tank){
             if(!bL && !bU && !bR && !bD) tank.setMoving(false);
             else tank.setMoving(true);
 

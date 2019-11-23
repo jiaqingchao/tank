@@ -5,7 +5,7 @@ import com.jqc.tank.common.ResourceMgr;
 
 import java.awt.*;
 
-public class Explode extends BaseExplode {
+public class RectExplode extends BaseExplode {
 
     private int x;
     private int y;
@@ -16,23 +16,26 @@ public class Explode extends BaseExplode {
     private int step = 0;
     private boolean living = true;
 
-    public Explode(int x, int y){
+    public RectExplode(int x, int y){
         this.x = x;
         this.y = y;
         new Thread(()->new Audio("audio/explode.wav").play()).start();
     }
 
+    @Override
     public boolean isLiving() {
         return living;
     }
 
+    @Override
     public void paint(Graphics g) {
-        if(!isLiving()){
-            return;
-        }
-        g.drawImage(ResourceMgr.explodes[step++], this.x, this.y,null);
+        //g.drawImage(ResourceMgr.explodes[step++], this.x, this.y,null);
+        Color c = g.getColor();
+        g.setColor(Color.RED);
+        g.fillRect(x, y, 10*step,10*step++);
+        g.setColor(c);
 
-        if(step >= ResourceMgr.explodes.length){
+        if(step >= 7){
             living = false;
         }
     }
