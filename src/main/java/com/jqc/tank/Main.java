@@ -1,5 +1,7 @@
 package com.jqc.tank;
 
+import com.jqc.tank.bean.Explode;
+import com.jqc.tank.bean.GameObject;
 import com.jqc.tank.bean.Tank;
 import com.jqc.tank.common.CONSTANTS;
 import com.jqc.tank.common.Dir;
@@ -17,5 +19,6 @@ public class Main {
             Thread.sleep(50);
             tf.repaint();
         }
+
     }
 }

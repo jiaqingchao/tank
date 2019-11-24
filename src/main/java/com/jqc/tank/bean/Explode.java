@@ -1,14 +1,12 @@
 package com.jqc.tank.bean;
 
 import com.jqc.tank.GameModel;
+import com.jqc.tank.common.Audio;
 import com.jqc.tank.common.ResourceMgr;
 
 import java.awt.*;
 
-public class Explode {
-
-    private int x;
-    private int y;
+public class Explode extends GameObject{
 
     public static int WIDTH = ResourceMgr.explodes[0].getWidth();
     public static int HEIGHT = ResourceMgr.explodes[0].getHeight();
@@ -19,6 +17,7 @@ public class Explode {
     GameModel gm;
 
     public Explode(int x, int y, GameModel gm){
+        super(x, y);
         this.x = x;
         this.y = y;
         this.gm = gm;

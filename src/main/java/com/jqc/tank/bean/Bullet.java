@@ -7,25 +7,21 @@ import com.jqc.tank.common.*;
 import java.awt.Rectangle;
 import java.awt.Graphics;
 
+public class Bullet extends GameObject{
 
-public class Bullet {
-
-    private int x;
-    private int y;
     private Dir dir;
     private int speed = PropertyMgr.getInt(CONSTANTS.PROPERTY_BULLET_SPEED);
     private boolean living = true;
-    private Group group;
+    public Group group;
 
     public static int WIDTH = ResourceMgr.bulletU.getWidth();
     public static int HEIGHT = ResourceMgr.bulletU.getHeight();
 
-    GameModel gm;
+    public GameModel gm;
     private Rectangle rectangle = new Rectangle();
 
     public Bullet(int x, int y, Dir dir, Group group, GameModel gm) {
-        this.x = x;
-        this.y = y;
+        super(x, y);
         this.dir = dir;
         this.group = group;
         this.gm = gm;
@@ -35,14 +31,14 @@ public class Bullet {
         rectangle.width = Tank.WIDTH;
         rectangle.height = Tank.HEIGHT;
 
-        gm.bullets.add(this);
+        gm.add(this);
     }
 
     public boolean isLiving() {
         return living;
     }
 
-    private void die() {
+    public void die() {
         this.living = false;
     }
 
@@ -110,18 +106,4 @@ public class Bullet {
         }
     }
 
-    public void collisionWidth(Tank tank) {
-
-        if(this.group == tank.getGroup()){
-            return;
-        }
-
-        Rectangle tankRect = tank.getRectangle();
-        Rectangle bulletRect = this.getRectangle();
-
-        if(bulletRect.intersects(tankRect)){
-            this.die();
-            tank.die();
-        }
-    }
 }

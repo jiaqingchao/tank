@@ -1,5 +1,5 @@
 
-package com.jqc.tank.bean;
+package com.jqc.tank.common;
 
 import java.io.IOException;
 

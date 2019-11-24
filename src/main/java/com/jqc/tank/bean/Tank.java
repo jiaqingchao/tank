@@ -8,8 +8,8 @@ import com.jqc.tank.strategy.FireStrategy;
 import java.awt.*;
 import java.util.Random;
 
-public class Tank {
-    private int x, y;
+public class Tank extends GameObject{
+    private int oldX, oldY;
     private Dir dir = Dir.DOWN;
     private int speed = PropertyMgr.getInt(CONSTANTS.PROPERTY_TANK_SPEED);
 
@@ -18,7 +18,7 @@ public class Tank {
 
     private boolean moving = false;
     private boolean living = true;
-    private Group group;
+    public Group group;
 
     private GameModel gm;
     private Rectangle rectangle = new Rectangle();
@@ -27,8 +27,9 @@ public class Tank {
     private FireStrategy fs = null;
 
     public Tank(int x, int y, Dir dir, Group group, GameModel gm) {
-        this.x = x;
-        this.y = y;
+        super(x, y);
+        this.oldX = x;
+        this.oldY = y;
         this.dir = dir;
         this.group = group;
         this.gm = gm;
@@ -58,6 +59,22 @@ public class Tank {
         return y;
     }
 
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getOldX() {
+        return oldX;
+    }
+
+    public int getOldY() {
+        return oldY;
+    }
+
     public Dir getDir() {
         return dir;
     }
@@ -84,7 +101,7 @@ public class Tank {
         int eX = this.getX() + Tank.WIDTH/2 - Explode.WIDTH/2;
         int eY = this.getY() + Tank.HEIGHT/2 - Explode.HEIGHT/2;
 
-        gm.explodes.add(new Explode(eX, eY, gm));
+        gm.add(new Explode(eX, eY, gm));
     }
 
     public void paint(Graphics g) {
@@ -166,12 +183,15 @@ public class Tank {
     private void move() {
         if(!this.moving) return;
 
+        this.oldX = this.x;
+        this.oldY = this.y;
+
         setXYForDirSpeed();
 
         boudsCheck();
 
-        rectangle.x = this.x;
-        rectangle.y = this.y;
+        this.rectangle.x = this.x;
+        this.rectangle.y = this.y;
 
         if(this.group == Group.RED) {
             new Thread(() -> new Audio("audio/tank_move.wav").play()).start();
@@ -203,6 +223,9 @@ public class Tank {
         if(this.y < 28) this.y = 28;
         if(this.x > TankFrame.WIDTH - Tank.WIDTH - 2) this.x = TankFrame.WIDTH - Tank.WIDTH - 2;
         if(this.y > TankFrame.HEIGHT - Tank.HEIGHT - 2) this.y = TankFrame.HEIGHT - Tank.HEIGHT - 2;
+    }
+    public void stop(){
+        this.moving = false;
     }
 
 }

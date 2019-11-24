@@ -1,6 +1,6 @@
 package com.jqc.tank.strategy;
 
-import com.jqc.tank.bean.Audio;
+import com.jqc.tank.common.Audio;
 import com.jqc.tank.bean.Bullet;
 import com.jqc.tank.bean.Tank;
 import com.jqc.tank.common.Group;
