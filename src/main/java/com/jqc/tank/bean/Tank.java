@@ -1,5 +1,6 @@
 package com.jqc.tank.bean;
 
+import com.jqc.tank.GameModel;
 import com.jqc.tank.TankFrame;
 import com.jqc.tank.common.*;
 import com.jqc.tank.strategy.FireStrategy;
@@ -19,18 +20,18 @@ public class Tank {
     private boolean living = true;
     private Group group;
 
-    private TankFrame tf;
+    private GameModel gm;
     private Rectangle rectangle = new Rectangle();
     private Random random = new Random();
 
     private FireStrategy fs = null;
 
-    public Tank(int x, int y, Dir dir, Group group, TankFrame tf) {
+    public Tank(int x, int y, Dir dir, Group group, GameModel gm) {
         this.x = x;
         this.y = y;
         this.dir = dir;
         this.group = group;
-        this.tf = tf;
+        this.gm = gm;
         if(this.group == Group.AI){
             this.moving = true;
         }
@@ -61,8 +62,8 @@ public class Tank {
         return dir;
     }
 
-    public TankFrame getTf() {
-        return tf;
+    public GameModel getGm() {
+        return gm;
     }
 
     public boolean isLiving() {
@@ -83,7 +84,7 @@ public class Tank {
         int eX = this.getX() + Tank.WIDTH/2 - Explode.WIDTH/2;
         int eY = this.getY() + Tank.HEIGHT/2 - Explode.HEIGHT/2;
 
-        tf.explodes.add(new Explode(eX, eY));
+        gm.explodes.add(new Explode(eX, eY, gm));
     }
 
     public void paint(Graphics g) {

@@ -1,5 +1,6 @@
 package com.jqc.tank.bean;
 
+import com.jqc.tank.GameModel;
 import com.jqc.tank.TankFrame;
 import com.jqc.tank.common.*;
 
@@ -19,20 +20,22 @@ public class Bullet {
     public static int WIDTH = ResourceMgr.bulletU.getWidth();
     public static int HEIGHT = ResourceMgr.bulletU.getHeight();
 
+    GameModel gm;
     private Rectangle rectangle = new Rectangle();
 
-    public Bullet(int x, int y, Dir dir, Group group, TankFrame tf) {
+    public Bullet(int x, int y, Dir dir, Group group, GameModel gm) {
         this.x = x;
         this.y = y;
         this.dir = dir;
         this.group = group;
+        this.gm = gm;
 
         rectangle.x = this.x;
         rectangle.y = this.y;
         rectangle.width = Tank.WIDTH;
         rectangle.height = Tank.HEIGHT;
 
-        tf.bullets.add(this);
+        gm.bullets.add(this);
     }
 
     public boolean isLiving() {

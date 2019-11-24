@@ -19,19 +19,19 @@ public class SquareFireStrategy implements FireStrategy<Tank>{
 
         int bX = tank.getX() + Tank.WIDTH/2 - Bullet.WIDTH/2;
         int bY = tank.getY() + Tank.HEIGHT;
-        new Bullet(bX, bY, Dir.DOWN, tank.getGroup(), tank.getTf());
+        new Bullet(bX, bY, Dir.DOWN, tank.getGroup(), tank.getGm());
 
         bX = tank.getX() + Tank.WIDTH/2 - Bullet.WIDTH/2;
         bY = tank.getY() - Bullet.HEIGHT;
-        new Bullet(bX, bY, Dir.UP, tank.getGroup(), tank.getTf());
+        new Bullet(bX, bY, Dir.UP, tank.getGroup(), tank.getGm());
 
         bX = tank.getX() - Bullet.WIDTH;
         bY = tank.getY() + Tank.HEIGHT/2 - Bullet.HEIGHT/2;
-        new Bullet(bX, bY, Dir.LEFT, tank.getGroup(), tank.getTf());
+        new Bullet(bX, bY, Dir.LEFT, tank.getGroup(), tank.getGm());
 
         bX = tank.getX() + Tank.WIDTH;
         bY = tank.getY() + Tank.HEIGHT/2 - Bullet.HEIGHT/2;
-        new Bullet(bX, bY, Dir.RIGHT, tank.getGroup(), tank.getTf());
+        new Bullet(bX, bY, Dir.RIGHT, tank.getGroup(), tank.getGm());
 
         if(tank.getGroup() == Group.RED){
             new Thread(()->new Audio("audio/tank_fire.wav").play()).start();
