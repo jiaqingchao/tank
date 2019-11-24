@@ -11,8 +11,12 @@ public class CONSTANTS {
 
     public static final String PROPERTY_INIT_TANK_COUNT = "initTankCount";
 
+    public static final String PROPERTY_INIT_WALL_COUNT = "initWallCount";
+
     public static final String PROPERTY_SQUARE_FIRE = "squareFire";
 
     public static final String PROPERTY_DEFAULT_FIRE = "defaultFire";
+
+    public static final String PROPERTY_COLLIDERS = "colliders";
 }
 

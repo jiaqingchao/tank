@@ -1,9 +1,6 @@
 package com.jqc.tank;
 
-import com.jqc.tank.bean.Bullet;
-import com.jqc.tank.bean.Explode;
-import com.jqc.tank.bean.GameObject;
-import com.jqc.tank.bean.Tank;
+import com.jqc.tank.bean.*;
 import com.jqc.tank.common.CONSTANTS;
 import com.jqc.tank.common.Dir;
 import com.jqc.tank.common.Group;
@@ -40,9 +37,20 @@ public class GameModel {
 
     private GameModel(){
         int initTankCount = PropertyMgr.getInt(CONSTANTS.PROPERTY_INIT_TANK_COUNT);
+        int initWallCount = PropertyMgr.getInt(CONSTANTS.PROPERTY_INIT_WALL_COUNT);
 
         for(int i = 0; i < initTankCount; i++){
             add(new Tank(50 + i * 80,200, Dir.DOWN, Group.AI, this));
+        }
+        int y = 300;
+        int j = 0;
+        for(int i = 0; i < initWallCount; i++){
+            int x = 100 + j++ * 25;
+            if(x > 800){
+                y += 100;
+                j = 0;
+            }
+            new Wall(x,y,this);
         }
     }
     public static GameModel getInstance(){
@@ -98,7 +106,7 @@ public class GameModel {
     private void collisonCheck() {
         for(int i = 0; i < objects.size(); i++){
             GameObject o1 = objects.get(i);
-            for(int j = i + 1; j < objects.size(); j++){
+            for(int j = i + 1; j < objects.size() && o1.isLiving(); j++){
                 GameObject o2 = objects.get(j);
                 if(!chain.collide(o1, o2)){
                     continue;
