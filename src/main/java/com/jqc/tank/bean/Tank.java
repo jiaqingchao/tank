@@ -3,7 +3,6 @@ package com.jqc.tank.bean;
 import com.jqc.tank.GameModel;
 import com.jqc.tank.TankFrame;
 import com.jqc.tank.common.*;
-import com.jqc.tank.cor.Collider;
 import com.jqc.tank.strategy.FireStrategy;
 
 import java.awt.*;
@@ -21,22 +20,21 @@ public class Tank extends GameObject{
     private boolean living = true;
     public Group group;
 
-    private GameModel gm;
     private Rectangle rectangle = new Rectangle();
     private Random random = new Random();
 
     private FireStrategy fs = null;
 
-    public Tank(int x, int y, Dir dir, Group group, GameModel gm) {
+    public Tank(int x, int y, Dir dir, Group group) {
         super(x, y);
         this.oldX = x;
         this.oldY = y;
         this.dir = dir;
         this.group = group;
-        this.gm = gm;
         if(this.group == Group.AI){
             this.moving = true;
         }
+        GameModel.getInstance().add(this);
 
         rectangle.x = this.x;
         rectangle.y = this.y;
@@ -62,10 +60,6 @@ public class Tank extends GameObject{
 
     public Dir getDir() {
         return dir;
-    }
-
-    public GameModel getGm() {
-        return gm;
     }
 
     public boolean isLiving() {
@@ -139,6 +133,9 @@ public class Tank extends GameObject{
     }
 
     public void fire() {
+        if(!this.isLiving()){
+            return;
+        }
         if(fs == null){
             initFireStrategy();
         }

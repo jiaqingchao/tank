@@ -15,9 +15,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
 
 public class TankFrame extends Frame {
 
@@ -25,7 +22,6 @@ public class TankFrame extends Frame {
 
     public static int WIDTH = PropertyMgr.getInt(CONSTANTS.PROPERTY_GAME_WINDOW_WIDTH);
     public static int HEIGHT = PropertyMgr.getInt(CONSTANTS.PROPERTY_GAME_WINDOW_HEIGHT);
-
 
     public TankFrame(){
 
@@ -64,12 +60,7 @@ public class TankFrame extends Frame {
     @Override
     public void paint(Graphics g){
         gm.paint(g);
-
-
-
     }
-
-
 
     class MyKeyListener extends KeyAdapter{
 
@@ -117,7 +108,9 @@ public class TankFrame extends Frame {
                     bD = false;
                     break;
                 case KeyEvent.VK_SPACE:
-                    gm.getMainTank().fire();
+                    if(gm.getMainTank() != null){
+                        gm.getMainTank().fire();
+                    }
                 default:
                     break;
             }
@@ -126,6 +119,9 @@ public class TankFrame extends Frame {
 
         private void setMainTankDir(){
             Tank tank = gm.getMainTank();
+            if(tank == null){
+                return;
+            }
             if(!bL && !bU && !bR && !bD) tank.setMoving(false);
             else tank.setMoving(true);
 

@@ -47,7 +47,6 @@ public class Bullet extends GameObject{
     public void paint(Graphics g) {
         paintBullet(g);
         move();
-
     }
 
     private void paintBullet(Graphics g) {

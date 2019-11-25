@@ -13,20 +13,16 @@ import com.jqc.tank.cor.TankTankCollider;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
 public class GameModel {
     private final static GameModel INSTANCE = new GameModel();
-
+    static {
+        init();
+    }
     private List<GameObject> objects = new ArrayList<>();
-    public Tank redTank = new Tank(100,100, Dir.DOWN, Group.RED, this);
+    private Tank redTank;
 
-    ColliderChain chain = ColliderChain.getInstance();
-
-//    public List<Tank> tanks = new ArrayList<>();
-//    public List<Bullet> bullets = new ArrayList<>();
-//    public List<Explode> explodes = new ArrayList<>();
-
+    private ColliderChain chain = ColliderChain.getInstance();
 
     public void add(GameObject go){
         this.objects.add(go);
@@ -35,12 +31,18 @@ public class GameModel {
         this.objects.remove(object);
     }
 
-    private GameModel(){
+    private GameModel(){}
+    public static GameModel getInstance(){
+        return INSTANCE;
+    }
+    private static void init(){
         int initTankCount = PropertyMgr.getInt(CONSTANTS.PROPERTY_INIT_TANK_COUNT);
         int initWallCount = PropertyMgr.getInt(CONSTANTS.PROPERTY_INIT_WALL_COUNT);
 
+        INSTANCE.redTank = new Tank(100,100, Dir.DOWN, Group.RED);
+
         for(int i = 0; i < initTankCount; i++){
-            add(new Tank(50 + i * 80,200, Dir.DOWN, Group.AI, this));
+            new Tank(50 + i * 80,200, Dir.DOWN, Group.AI);
         }
         int y = 300;
         int j = 0;
@@ -50,27 +52,23 @@ public class GameModel {
                 y += 100;
                 j = 0;
             }
-            new Wall(x,y,this);
+            new Wall(x,y);
         }
-    }
-    public static GameModel getInstance(){
-        return INSTANCE;
     }
 
     public void paint(Graphics g){
 
         paintCount(g);
 
-        if(!redTank.isLiving()){
-            //gameOver(g);
-//            return;
-        }
-
-        redTank.paint(g);
-
         paintGameObject(g);
 
         collisonCheck();
+
+        if(!redTank.isLiving()){
+            gameOver(g);
+        }
+
+
     }
     private void gameOver(Graphics g) {
         Color c = g.getColor();
@@ -78,7 +76,7 @@ public class GameModel {
         g.drawString("GAME OVER", TankFrame.WIDTH / 2 - 50, TankFrame.HEIGHT / 2 - 10);
         g.setColor(c);
 
-        objects.removeAll(objects);
+        //objects.removeAll(objects);
     }
 
     private void paintCount(Graphics g) {
@@ -104,9 +102,9 @@ public class GameModel {
     }
 
     private void collisonCheck() {
-        for(int i = 0; i < objects.size(); i++){
+        for(int i = 0; i < objects.size() - 1; i++){
             GameObject o1 = objects.get(i);
-            for(int j = i + 1; j < objects.size() && o1.isLiving(); j++){
+            for(int j = i + 1; j < objects.size(); j++){
                 GameObject o2 = objects.get(j);
                 if(!chain.collide(o1, o2)){
                     continue;

@@ -39,7 +39,7 @@ public class DefaultFireStrategy implements FireStrategy<Tank>{
                 break;
         }
 
-        new Bullet(bX, bY, tank.getDir(), tank.getGroup(), tank.getGm());
+        new Bullet(bX, bY, tank.getDir(), tank.getGroup());
 
         if(tank.getGroup() == Group.RED){
             new Thread(()->new Audio("audio/tank_fire.wav").play()).start();

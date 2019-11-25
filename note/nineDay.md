@@ -22,6 +22,14 @@
 
 ​	e.对于GameModel.add()方法优化
 
+​		GameModel.getInstance().add(this); 二级耦合降为3级耦合
+
+​		i.一级耦合：继承
+
+​		ii.二级耦合：一个类是另一个类的属性
+
+​		iii.三级耦合：一个类中调用了另一个类的属性或方法
+
 2.详解observer设计模式
 
 3.详解decorator设计模式

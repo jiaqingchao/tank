@@ -15,7 +15,7 @@ public class Wall extends GameObject{
         return rectangle;
     }
 
-    public Wall(int x, int y, GameModel gm) {
+    public Wall(int x, int y) {
         super(x, y);
 
         GameModel.getInstance().add(this);
