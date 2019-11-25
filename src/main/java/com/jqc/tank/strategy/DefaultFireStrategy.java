@@ -41,7 +41,12 @@ public class DefaultFireStrategy implements FireStrategy<Tank>{
             default:
                 break;
         }
-        GameModel.getInstance().add(new TailDecorator( new RectDecorator(new Bullet(bX, bY, tank.getDir(), tank.getGroup()))));
+        new Bullet(bX, bY, tank.getDir(), tank.getGroup());
+        //bug? new Bullet把自己加了一般
+//        GameModel.getInstance().add(
+//                new TailDecorator(
+//                        new RectDecorator(
+//                                new Bullet(bX, bY, tank.getDir(), tank.getGroup()))));
 
         if(tank.getGroup() == Group.RED){
             new Thread(()->new Audio("audio/tank_fire.wav").play()).start();

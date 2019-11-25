@@ -32,6 +32,8 @@
 
 2.详解observer设计模式
 
-3.详解decorator设计模式
+3.详解decorator设计模式 
+
+​	a.为了学术而学术，一般不用
 
 4.Flyweight?
