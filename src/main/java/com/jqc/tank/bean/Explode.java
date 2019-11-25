@@ -15,7 +15,8 @@ public class Explode extends GameObject{
     private boolean living = true;
 
     public Explode(int x, int y){
-        super(x, y);
+        this.x = x;
+        this.y = y;
         this.x = x;
         this.y = y;
         GameModel.getInstance().add(this);
@@ -24,6 +25,26 @@ public class Explode extends GameObject{
 
     public boolean isLiving() {
         return living;
+    }
+
+    @Override
+    public int getWidth() {
+        return WIDTH;
+    }
+
+    @Override
+    public int getHeight() {
+        return HEIGHT;
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public int getY() {
+        return y;
     }
 
     public void paint(Graphics g) {

@@ -26,7 +26,8 @@ public class Tank extends GameObject{
     private FireStrategy fs = null;
 
     public Tank(int x, int y, Dir dir, Group group) {
-        super(x, y);
+        this.x = x;
+        this.y = y;
         this.oldX = x;
         this.oldY = y;
         this.dir = dir;
@@ -72,6 +73,16 @@ public class Tank extends GameObject{
 
     public Rectangle getRectangle(){
         return rectangle;
+    }
+
+    @Override
+    public int getWidth() {
+        return WIDTH;
+    }
+
+    @Override
+    public int getHeight() {
+        return HEIGHT;
     }
 
     public void back(){

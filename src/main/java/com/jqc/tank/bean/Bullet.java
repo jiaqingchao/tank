@@ -4,8 +4,7 @@ import com.jqc.tank.GameModel;
 import com.jqc.tank.TankFrame;
 import com.jqc.tank.common.*;
 
-import java.awt.Rectangle;
-import java.awt.Graphics;
+import java.awt.*;
 
 public class Bullet extends GameObject{
 
@@ -20,7 +19,8 @@ public class Bullet extends GameObject{
     private Rectangle rectangle = new Rectangle();
 
     public Bullet(int x, int y, Dir dir, Group group) {
-        super(x, y);
+        this.x = x;
+        this.y = y;
         this.dir = dir;
         this.group = group;
 
@@ -42,6 +42,26 @@ public class Bullet extends GameObject{
 
     public Rectangle getRectangle() {
         return rectangle;
+    }
+
+    @Override
+    public int getWidth() {
+        return WIDTH;
+    }
+
+    @Override
+    public int getHeight() {
+        return HEIGHT;
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public int getY() {
+        return y;
     }
 
     public void paint(Graphics g) {

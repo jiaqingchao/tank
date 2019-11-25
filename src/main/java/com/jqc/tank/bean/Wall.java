@@ -5,7 +5,6 @@ import com.jqc.tank.GameModel;
 import java.awt.*;
 
 public class Wall extends GameObject{
-
     private boolean living = true;
     private int width = 25;
     private int height = 25;
@@ -16,7 +15,8 @@ public class Wall extends GameObject{
     }
 
     public Wall(int x, int y) {
-        super(x, y);
+        this.x = x;
+        this.y = y;
 
         GameModel.getInstance().add(this);
 
@@ -33,6 +33,26 @@ public class Wall extends GameObject{
         g.fillRect(this.x, this.y, this.width, this.height);
         g.setColor(c);
 
+    }
+
+    @Override
+    public int getWidth() {
+        return width;
+    }
+
+    @Override
+    public int getHeight() {
+        return height;
+    }
+
+    @Override
+    public int getX() {
+        return x;
+    }
+
+    @Override
+    public int getY() {
+        return y;
     }
 
     @Override

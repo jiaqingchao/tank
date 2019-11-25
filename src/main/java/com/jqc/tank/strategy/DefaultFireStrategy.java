@@ -1,9 +1,12 @@
 package com.jqc.tank.strategy;
 
+import com.jqc.tank.GameModel;
 import com.jqc.tank.common.Audio;
 import com.jqc.tank.bean.Bullet;
 import com.jqc.tank.bean.Tank;
 import com.jqc.tank.common.Group;
+import com.jqc.tank.decorator.RectDecorator;
+import com.jqc.tank.decorator.TailDecorator;
 
 public class DefaultFireStrategy implements FireStrategy<Tank>{
     private final static DefaultFireStrategy INSTANCE = new DefaultFireStrategy();
@@ -38,8 +41,7 @@ public class DefaultFireStrategy implements FireStrategy<Tank>{
             default:
                 break;
         }
-
-        new Bullet(bX, bY, tank.getDir(), tank.getGroup());
+        GameModel.getInstance().add(new TailDecorator( new RectDecorator(new Bullet(bX, bY, tank.getDir(), tank.getGroup()))));
 
         if(tank.getGroup() == Group.RED){
             new Thread(()->new Audio("audio/tank_fire.wav").play()).start();
