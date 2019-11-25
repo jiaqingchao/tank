@@ -1,15 +1,14 @@
 package com.jqc.tank.bean;
 
 import com.jqc.tank.GameModel;
-import com.jqc.tank.common.ResourceMgr;
 
 import java.awt.*;
 
 public class Wall extends GameObject{
 
     private boolean living = true;
-    public static int WIDTH = 25;
-    public static int HEIGHT = 25;
+    private int width = 25;
+    private int height = 25;
     private Rectangle rectangle = new Rectangle();
 
     public Rectangle getRectangle() {
@@ -23,15 +22,15 @@ public class Wall extends GameObject{
 
         rectangle.x = x;
         rectangle.y = y;
-        rectangle.width = Wall.WIDTH;
-        rectangle.height = Wall.HEIGHT;
+        rectangle.width = this.width;
+        rectangle.height = this.height;
     }
 
     @Override
     public void paint(Graphics g) {
         Color c = g.getColor();
         g.setColor(Color.BLUE);
-        g.fillRect(this.x, this.y, Wall.WIDTH, Wall.HEIGHT);
+        g.fillRect(this.x, this.y, this.width, this.height);
         g.setColor(c);
 
     }

@@ -6,7 +6,13 @@ import com.jqc.tank.bean.Tank;
 import com.jqc.tank.common.Group;
 
 public class DefaultFireStrategy implements FireStrategy<Tank>{
+    private final static DefaultFireStrategy INSTANCE = new DefaultFireStrategy();
 
+    private DefaultFireStrategy(){}
+
+    public static DefaultFireStrategy getInstance(){
+        return INSTANCE;
+    }
     @Override
     public void fire(Tank tank) {
         int bX = 0;

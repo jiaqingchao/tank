@@ -3,6 +3,7 @@ package com.jqc.tank.bean;
 import com.jqc.tank.GameModel;
 import com.jqc.tank.TankFrame;
 import com.jqc.tank.common.*;
+import com.jqc.tank.cor.Collider;
 import com.jqc.tank.strategy.FireStrategy;
 
 import java.awt.*;
@@ -59,22 +60,6 @@ public class Tank extends GameObject{
         return y;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getOldX() {
-        return oldX;
-    }
-
-    public int getOldY() {
-        return oldY;
-    }
-
     public Dir getDir() {
         return dir;
     }
@@ -93,6 +78,11 @@ public class Tank extends GameObject{
 
     public Rectangle getRectangle(){
         return rectangle;
+    }
+
+    public void back(){
+        this.x = this.oldX;
+        this.y = this.oldY;
     }
 
     public void die() {
@@ -139,10 +129,7 @@ public class Tank extends GameObject{
 
         // AI 随机发射子弹
         if(random.nextInt(100) > 95){
-            if(fs == null){
-                initFireStrategy();
-            }
-            fs.fire(this);
+            fire();
         }
 
         //AI 随机改变方向
@@ -151,10 +138,22 @@ public class Tank extends GameObject{
         }
     }
 
+    public void fire() {
+        if(fs == null){
+            initFireStrategy();
+        }
+        fs.fire(this);
+    }
+
     private void initFireStrategy() {
-        String defaultFSName = PropertyMgr.getString(CONSTANTS.PROPERTY_DEFAULT_FIRE);
+        String fsName;
+        if(this.group == Group.AI){
+            fsName = PropertyMgr.getString(CONSTANTS.PROPERTY_DEFAULT_FIRE);
+        }else{
+            fsName = PropertyMgr.getString(CONSTANTS.PROPERTY_SQUARE_FIRE);
+        }
         try {
-            fs = (FireStrategy) Class.forName(defaultFSName).getDeclaredConstructor().newInstance();
+            fs = (FireStrategy) Class.forName(fsName).getMethod("getInstance").invoke(null);
         } catch (Exception e) {
             e.printStackTrace();
         }

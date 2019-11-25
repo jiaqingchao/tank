@@ -117,7 +117,7 @@ public class TankFrame extends Frame {
                     bD = false;
                     break;
                 case KeyEvent.VK_SPACE:
-                    SquareFireStrategy.getInstance().fire(gm.getMainTank());
+                    gm.getMainTank().fire();
                 default:
                     break;
             }

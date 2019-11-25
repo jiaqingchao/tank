@@ -18,8 +18,7 @@ public class TankWallCollider implements Collider {
             Tank t = (Tank) o1;
             Wall w = (Wall) o2;
             if(t.getRectangle().intersects(w.getRectangle())){
-                t.setX(t.getOldX());
-                t.setY(t.getOldY());
+                t.back();
             }
         }else if(o1 instanceof Wall && o2 instanceof Tank){
             return collide(o2, o1);
