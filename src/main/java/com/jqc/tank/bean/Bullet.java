@@ -17,21 +17,19 @@ public class Bullet extends GameObject{
     public static int WIDTH = ResourceMgr.bulletU.getWidth();
     public static int HEIGHT = ResourceMgr.bulletU.getHeight();
 
-    public GameModel gm;
     private Rectangle rectangle = new Rectangle();
 
-    public Bullet(int x, int y, Dir dir, Group group, GameModel gm) {
+    public Bullet(int x, int y, Dir dir, Group group) {
         super(x, y);
         this.dir = dir;
         this.group = group;
-        this.gm = gm;
 
         rectangle.x = this.x;
         rectangle.y = this.y;
         rectangle.width = Tank.WIDTH;
         rectangle.height = Tank.HEIGHT;
 
-        gm.add(this);
+        GameModel.getInstance().add(this);
     }
 
     public boolean isLiving() {

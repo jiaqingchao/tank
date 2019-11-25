@@ -18,7 +18,7 @@ public class Wall extends GameObject{
     public Wall(int x, int y, GameModel gm) {
         super(x, y);
 
-        gm.add(this);
+        GameModel.getInstance().add(this);
 
         rectangle.x = x;
         rectangle.y = y;

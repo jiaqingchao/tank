@@ -14,13 +14,11 @@ public class Explode extends GameObject{
     private int step = 0;
     private boolean living = true;
 
-    GameModel gm;
-
-    public Explode(int x, int y, GameModel gm){
+    public Explode(int x, int y){
         super(x, y);
         this.x = x;
         this.y = y;
-        this.gm = gm;
+        GameModel.getInstance().add(this);
         new Thread(()->new Audio("audio/explode.wav").play()).start();
     }
 

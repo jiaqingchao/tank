@@ -91,7 +91,7 @@ public class Tank extends GameObject{
         int eX = this.getX() + Tank.WIDTH/2 - Explode.WIDTH/2;
         int eY = this.getY() + Tank.HEIGHT/2 - Explode.HEIGHT/2;
 
-        gm.add(new Explode(eX, eY, gm));
+        new Explode(eX, eY);
     }
 
     public void paint(Graphics g) {
