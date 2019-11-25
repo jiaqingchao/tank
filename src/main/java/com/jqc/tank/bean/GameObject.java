@@ -13,4 +13,5 @@ public abstract class GameObject {
     public abstract int getY();
 
     public abstract boolean isLiving();
+
 }

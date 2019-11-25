@@ -3,9 +3,15 @@ package com.jqc.tank.bean;
 import com.jqc.tank.GameModel;
 import com.jqc.tank.TankFrame;
 import com.jqc.tank.common.*;
+import com.jqc.tank.observer.TankFireEvent;
+import com.jqc.tank.observer.TankFireHandler;
+import com.jqc.tank.observer.TankFireObserver;
 import com.jqc.tank.strategy.FireStrategy;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class Tank extends GameObject{
@@ -233,6 +239,16 @@ public class Tank extends GameObject{
     }
     public void stop(){
         this.moving = false;
+    }
+
+
+    private List<TankFireObserver> fireObservers = Arrays.asList(new TankFireHandler());
+
+    public void handleFireKey(){
+        TankFireEvent event = new TankFireEvent(this);
+        for(TankFireObserver o : fireObservers){
+            o.actionOnFire(event);
+        }
     }
 
 }
