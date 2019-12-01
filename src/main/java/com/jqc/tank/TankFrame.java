@@ -1,14 +1,9 @@
 package com.jqc.tank;
 
-import com.jqc.tank.bean.Explode;
-import com.jqc.tank.bean.Bullet;
 import com.jqc.tank.bean.Tank;
 import com.jqc.tank.common.CONSTANTS;
 import com.jqc.tank.common.Dir;
-import com.jqc.tank.common.Group;
 import com.jqc.tank.common.PropertyMgr;
-import com.jqc.tank.strategy.DefaultFireStrategy;
-import com.jqc.tank.strategy.SquareFireStrategy;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -84,6 +79,12 @@ public class TankFrame extends Frame {
                     break;
                 case KeyEvent.VK_DOWN:
                     bD = true;
+                    break;
+                case KeyEvent.VK_S:
+                    gm.save();
+                    break;
+                case KeyEvent.VK_L:
+                    gm.load();
                     break;
                 default:
                     break;

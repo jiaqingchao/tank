@@ -1,16 +1,16 @@
 package com.jqc.tank;
 
-import com.jqc.tank.bean.*;
+import com.jqc.tank.bean.GameObject;
+import com.jqc.tank.bean.Tank;
+import com.jqc.tank.bean.Wall;
 import com.jqc.tank.common.CONSTANTS;
 import com.jqc.tank.common.Dir;
 import com.jqc.tank.common.Group;
 import com.jqc.tank.common.PropertyMgr;
-import com.jqc.tank.cor.BulletTankCollider;
-import com.jqc.tank.cor.Collider;
 import com.jqc.tank.cor.ColliderChain;
-import com.jqc.tank.cor.TankTankCollider;
 
 import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,5 +116,53 @@ public class GameModel {
 
     public Tank getMainTank() {
         return redTank;
+    }
+
+    public void save(){
+        File f = new File("H:/data/tank/tank.data");
+        ObjectOutputStream oos = null;
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(f);
+            oos = new ObjectOutputStream(fos);
+            oos.writeObject(redTank);
+            oos.writeObject(objects);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                oos.close();
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void load() {
+        File f = new File("H:/data/tank/tank.data");
+        ObjectInputStream ois = null;
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(f);
+            ois = new ObjectInputStream(fis);
+            redTank  = (Tank)ois.readObject();
+            objects  = (List)ois.readObject();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                ois.close();
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
