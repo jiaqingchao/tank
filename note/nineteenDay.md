@@ -24,3 +24,4 @@
       3. 坦克死掉的消息
       4. startmoving只在开始的时候发送一次
 5. nagle算法把小包合并的一起发送，网络游戏一般禁用这个算法
+   1.   .option(ChannelOption.TCP_NODELAY, true) 
