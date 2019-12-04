@@ -1,13 +1,15 @@
 package com.jqc.tank;
 
-import com.jqc.tank.bean.Explode;
 import com.jqc.tank.bean.Bullet;
+import com.jqc.tank.bean.Explode;
 import com.jqc.tank.bean.Tank;
 import com.jqc.tank.common.CONSTANTS;
 import com.jqc.tank.common.Dir;
 import com.jqc.tank.common.Group;
 import com.jqc.tank.common.PropertyMgr;
-import com.jqc.tank.strategy.DefaultFireStrategy;
+import com.jqc.tank.net.Client;
+import com.jqc.tank.net.TankStartMovingMsg;
+import com.jqc.tank.net.TankStopMsg;
 import com.jqc.tank.strategy.SquareFireStrategy;
 
 import java.awt.*;
@@ -15,24 +17,27 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 public class TankFrame extends Frame {
 
-    public static int WIDTH = PropertyMgr.getInt(CONSTANTS.PROPERTY_GAME_WINDOW_WIDTH);
-    public static int HEIGHT = PropertyMgr.getInt(CONSTANTS.PROPERTY_GAME_WINDOW_HEIGHT);
+    public static final int WIDTH = PropertyMgr.getInt(CONSTANTS.PROPERTY_GAME_WINDOW_WIDTH);
+    public static final int HEIGHT = PropertyMgr.getInt(CONSTANTS.PROPERTY_GAME_WINDOW_HEIGHT);
 
-    public List<Tank> tanks = new ArrayList<>();
+    public final static TankFrame INSTANCE = new TankFrame();
+
+    Random r = new Random();
+
+    public Map<UUID,Tank> tanks = new HashMap<>();
     public List<Bullet> bullets = new ArrayList<>();
     public List<Explode> explodes = new ArrayList<>();
 
-    public Tank redTank = new Tank(100,100,Dir.DOWN, Group.RED, this);
+    Tank redTank = new Tank(r.nextInt(WIDTH),r.nextInt(HEIGHT),Dir.DOWN, Group.RED, this);
+//    Tank redTank = new Tank(100,100,Dir.DOWN, Group.RED, this);
 
-    public TankFrame(){
+    private TankFrame(){
 
-        setVisible(true);
         setSize(WIDTH, HEIGHT);
         setTitle("tank war");
         setResizable(false);
@@ -93,7 +98,7 @@ public class TankFrame extends Frame {
         g.setColor(c);
         explodes.removeAll(explodes);
         bullets.removeAll(bullets);
-        tanks.removeAll(tanks);
+        tanks.clear();
     }
 
     private void paintCount(Graphics g) {
@@ -106,38 +111,66 @@ public class TankFrame extends Frame {
     }
 
     private void paintExplode(Graphics g) {
-        for(ListIterator<Explode> blastIterator = explodes.listIterator(); blastIterator.hasNext();){
-            Explode explode = blastIterator.next();
+        for(int i = 0; i < explodes.size(); i++){
+            Explode explode = explodes.get(i);
             explode.paint(g);
-            if(!explode.isLiving()) blastIterator.remove();
+            if(!explode.isLiving()){
+                explodes.remove(i--);
+            }
         }
     }
 
     private void paintBullet(Graphics g) {
-        for(ListIterator<Bullet> bulletIterator = bullets.listIterator(); bulletIterator.hasNext();){
-            Bullet bullet = bulletIterator.next();
+        for(int i = 0; i < bullets.size(); i++){
+            Bullet bullet = bullets.get(i);
             bullet.paint(g);
-            if(!bullet.isLiving()) bulletIterator.remove();
+            if(!bullet.isLiving()){
+                bullets.remove(i--);
+            }
         }
     }
 
     private void paintTank(Graphics g) {
-        for(ListIterator<Tank> tankListIterator = tanks.listIterator(); tankListIterator.hasNext();){
-            Tank tank = tankListIterator.next();
+        Collection<Tank> tankList = tanks.values();
+        Iterator<Tank> iterator = tankList.iterator();
+        while(iterator.hasNext()){
+            Tank tank = iterator.next();
             tank.paint(g);
-            if(!tank.isLiving()) tankListIterator.remove(); // ConcurrentModificationException   //异步新增tank,数量对不上，导致报错
+            if(!tank.isLiving()){
+                tanks.remove(tank);
+            }
         }
+
+//        for (Tank tank : tanks.values()) {
+//            tank.paint(g);
+//            tanks.remove(tank);
+//        }
+//        tanks.values().stream().forEach((tank)->{
+//            tank.paint(g);
+//            tanks.remove(tank);
+//        });
     }
 
     private void collisonCheck() {
         for(ListIterator<Bullet> bulletIterator = bullets.listIterator(); bulletIterator.hasNext();){
             Bullet bullet = bulletIterator.next();
             bullet.collisionWidth(redTank);
-            for(ListIterator<Tank> tankListIterator = tanks.listIterator(); tankListIterator.hasNext();){
-                bullet.collisionWidth(tankListIterator.next());
+            for(UUID id : tanks.keySet()){
+                bullet.collisionWidth(tanks.get(id));
             }
 
         }
+    }
+    public Tank getMainTank(){
+        return this.redTank;
+    }
+
+    public void addTank(Tank t) {
+        tanks.put(t.getId(), t);
+    }
+
+    public Tank findByUUID(UUID id) {
+        return tanks.get(id);
     }
 
     class MyKeyListener extends KeyAdapter{
@@ -194,13 +227,27 @@ public class TankFrame extends Frame {
         }
 
         private void setMainTankDir(Tank tank){
-            if(!bL && !bU && !bR && !bD) tank.setMoving(false);
-            else tank.setMoving(true);
-
-            if(bL) tank.setDir(Dir.LEFT);
-            if(bU) tank.setDir(Dir.UP);
-            if(bR) tank.setDir(Dir.RIGHT);
-            if(bD) tank.setDir(Dir.DOWN);
+            if(!bL && !bU && !bR && !bD){
+                tank.setMoving(false);
+                Client.INSTANCE.send(new TankStopMsg(getMainTank()));
+                return;
+            }
+            if(bL){
+                tank.setDir(Dir.LEFT);
+            }
+            if(bU) {
+                tank.setDir(Dir.UP);
+            }
+            if(bR) {
+                tank.setDir(Dir.RIGHT);
+            }
+            if(bD) {
+                tank.setDir(Dir.DOWN);
+            }
+            if(!redTank.isMoving()){
+                Client.INSTANCE.send(new TankStartMovingMsg(getMainTank()));
+            }
+            tank.setMoving(true);
         }
     }
 

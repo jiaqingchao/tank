@@ -2,10 +2,12 @@ package com.jqc.tank.bean;
 
 import com.jqc.tank.TankFrame;
 import com.jqc.tank.common.*;
+import com.jqc.tank.net.TankJoinMsg;
 import com.jqc.tank.strategy.FireStrategy;
 
 import java.awt.*;
 import java.util.Random;
+import java.util.UUID;
 
 public class Tank {
     private int x, y;
@@ -24,6 +26,7 @@ public class Tank {
     private Random random = new Random();
 
     private FireStrategy fs = null;
+    private UUID id = UUID.randomUUID();//正式的环境应该在服务器上生成
 
     public Tank(int x, int y, Dir dir, Group group, TankFrame tf) {
         this.x = x;
@@ -41,12 +44,25 @@ public class Tank {
         rectangle.height = Tank.HEIGHT;
     }
 
+    public Tank(TankJoinMsg msg) {
+        this.x = msg.getX();
+        this.y = msg.getY();
+        this.moving = msg.isMoving();
+        this.dir = msg.getDir();
+        this.group = msg.getGroup();
+        this.id = msg.getId();
+    }
+
     public void setDir(Dir dir) {
         this.dir = dir;
     }
 
-    public void setMoving(boolean moving) {
-        this.moving = moving;
+    public boolean isMoving() {
+        return moving;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public int getX() {
@@ -59,6 +75,14 @@ public class Tank {
 
     public Dir getDir() {
         return dir;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     public TankFrame getTf() {
@@ -136,7 +160,7 @@ public class Tank {
     private void initFireStrategy() {
         String defaultFSName = PropertyMgr.getString(CONSTANTS.PROPERTY_DEFAULT_FIRE);
         try {
-            fs = (FireStrategy) Class.forName(defaultFSName).getDeclaredConstructor().newInstance();
+            fs = (FireStrategy) Class.forName(defaultFSName).getMethod("getInstance").invoke(null);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -204,4 +228,7 @@ public class Tank {
         if(this.y > TankFrame.HEIGHT - Tank.HEIGHT - 2) this.y = TankFrame.HEIGHT - Tank.HEIGHT - 2;
     }
 
+    public void setMoving(boolean moving) {
+        this.moving = moving;
+    }
 }
