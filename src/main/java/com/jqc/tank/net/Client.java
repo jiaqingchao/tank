@@ -23,6 +23,7 @@ public class Client {
             ChannelFuture f = b.group(workers)
                     .channel(NioSocketChannel.class)
                     .handler(new ClientChannelInitializer())
+                    .option(ChannelOption.TCP_NODELAY, true)
                     .connect("127.0.0.1",8888)
                     .addListener((ChannelFuture channelFuture) -> {
                         if(!channelFuture.isSuccess()){

@@ -25,6 +25,7 @@ public class Server {
         try {
             ChannelFuture f = b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
+                    .childOption(ChannelOption.TCP_NODELAY, true)
                     .childHandler(new ServerChannelInitializer())
                     .bind(8888).sync();
 
