@@ -4,7 +4,15 @@
    2. 复习BIO-NIO-AIO-Netty的编程模型
       1. 网络程序的烦点：异常处理、正确关闭 ->线程的正常结结束 ->线程池的正常结束
    3. 写一个NettyServer
+      1. EventLoopGroup 网络IOs事件处理线程组
+      2. Netty中的任何方法都是异步模型
+      3. 首先使用Channellnitailzer initChannle() 添加channel的Handler
+      4. 在channelHandler中处理业务逻辑，学习使用ChannelInboundHandlerAdapter
    4. 写一个图形化的NettyServer
+      1. nettyClent传递数据给nettyserver
+      2. ByteBuf的使用
+      3. 保存多个客户端
+      4. 接收到一个客户端数据后传递给多个客户端
    5. 将NettyServer能够优雅的关闭
    6. 将项目转化为Maven项目
       1. 项目右击 configure - convert to Maven Project
