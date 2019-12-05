@@ -1,36 +1,41 @@
 package com.jqc.tank.net;
 
 import com.jqc.tank.TankFrame;
-import com.jqc.tank.bean.Tank;
+import com.jqc.tank.bean.Bullet;
 import com.jqc.tank.common.Dir;
+import com.jqc.tank.common.Group;
 
 import java.io.*;
 import java.util.UUID;
 
-public class TankStartMovingMsg extends Msg{
-    UUID id;
-    int x,y;
-    Dir dir;
+public class BulletNewMsg extends Msg{
 
-    public TankStartMovingMsg() {
+    UUID playerID;
+    UUID id;
+    int x, y;
+    Dir dir;
+    Group group;
+
+
+    public BulletNewMsg() {
     }
 
-    public TankStartMovingMsg(UUID id, int x, int y, Dir dir) {
+    public BulletNewMsg(Bullet bullet) {
+        this.playerID = bullet.getPlayerID();
+        this.x = bullet.getX();
+        this.y = bullet.getY();
+        this.dir = bullet.getDir();
+        this.group = bullet.getGroup();
+        this.id = bullet.getId();
+    }
+
+    public BulletNewMsg(UUID playerID, UUID id, int x, int y, Dir dir, Group group) {
+        this.playerID = playerID;
         this.id = id;
         this.x = x;
         this.y = y;
         this.dir = dir;
-    }
-
-    public TankStartMovingMsg(Tank tank) {
-        this.id = tank.getId();
-        this.x = tank.getX();
-        this.y = tank.getY();
-        this.dir = tank.getDir();
-    }
-
-    public UUID getId() {
-        return id;
+        this.group = group;
     }
 
     public int getX() {
@@ -45,18 +50,16 @@ public class TankStartMovingMsg extends Msg{
         return dir;
     }
 
-    @Override
-    public void handle() {
-        if(this.id.equals(TankFrame.INSTANCE.getMainTank().getId())){
-            return;
-        }
-        Tank t = TankFrame.INSTANCE.findTankByUUID(this.id);
-        if(t != null){
-            t.setMoving(true);
-            t.setX(this.x);
-            t.setY(this.y);
-            t.setDir(this.dir);
-        }
+    public Group getGroup() {
+        return group;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getPlayerID() {
+        return playerID;
     }
 
     @Override
@@ -70,8 +73,12 @@ public class TankStartMovingMsg extends Msg{
             dos.writeInt(x);
             dos.writeInt(y);
             dos.writeInt(dir.ordinal());
+            dos.writeInt(group.ordinal());
             dos.writeLong(id.getMostSignificantBits());
             dos.writeLong(id.getLeastSignificantBits());
+            dos.writeLong(playerID.getMostSignificantBits());
+            dos.writeLong(playerID.getLeastSignificantBits());
+
             dos.flush();
             bytes = baos.toByteArray();
         } catch (IOException e) {
@@ -101,10 +108,13 @@ public class TankStartMovingMsg extends Msg{
         DataInputStream dis = new DataInputStream(bais);
 
         try {
+
             this.x = dis.readInt();
             this.y = dis.readInt();
             this.dir = Dir.values()[dis.readInt()];
+            this.group = Group.values()[dis.readInt()];
             this.id = new UUID(dis.readLong(), dis.readLong());
+            this.playerID = new UUID(dis.readLong(), dis.readLong());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -128,16 +138,27 @@ public class TankStartMovingMsg extends Msg{
 
     @Override
     public String toString() {
-        return "TankStartMovingMsg{" +
-                "id=" + id +
-                ", x=" + x +
+        return "BulletNewMsg{" +
+                "x=" + x +
                 ", y=" + y +
                 ", dir=" + dir +
+                ", group=" + group +
+                ", id=" + id +
                 '}';
     }
 
     @Override
+    public void handle() {
+        if(this.playerID.equals(TankFrame.INSTANCE.getMainTank().getId())){
+            return;
+        }
+        Bullet b = new Bullet(this.playerID,this.x,this.y,this.dir,this.group);
+        b.setId(this.id);
+        TankFrame.INSTANCE.addBullet(b);
+    }
+
+    @Override
     public MsgType getMsgType() {
-        return MsgType.TankStartMoving;
+        return MsgType.BulletNew;
     }
 }

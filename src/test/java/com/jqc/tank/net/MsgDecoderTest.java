@@ -1,5 +1,7 @@
 package com.jqc.tank.net;
 
+import com.jqc.tank.common.Dir;
+import com.jqc.tank.common.Group;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.embedded.EmbeddedChannel;
@@ -13,10 +15,11 @@ class MsgDecoderTest {
     void encode() {
         EmbeddedChannel ch = new EmbeddedChannel();
 
+        UUID playerID = UUID.randomUUID();
         UUID id = UUID.randomUUID();
-        //Msg msg = new TankJoinMsg(5,10, Dir.RIGHT,true, Group.BLUE,id);
+        Msg msg = new BulletNewMsg(playerID, id, 5,10, Dir.RIGHT,Group.BLUE);
 //        Msg msg = new TankStartMovingMsg(id, 5,10, Dir.RIGHT);
-        Msg msg = new TankStopMsg(id, 5,10);
+//        Msg msg = new BulletNewMsg(id, 5,10);
         ch.pipeline().addLast(new MsgEncoder());
 
         ch.writeOutbound(msg);
@@ -31,25 +34,27 @@ class MsgDecoderTest {
         int x = buf.readInt();
         int y = buf.readInt();
 //        boolean moving = buf.readBoolean();
-//        Dir dir = Dir.values()[buf.readInt()];
-//        Group group = Group.values()[buf.readInt()];
-        UUID uuid = new UUID(buf.readLong(), buf.readLong());
+        Dir dir = Dir.values()[buf.readInt()];
+        Group group = Group.values()[buf.readInt()];
+        UUID id2 = new UUID(buf.readLong(), buf.readLong());
+        UUID playerID2 = new UUID(buf.readLong(), buf.readLong());
 
         Assert.assertEquals(5,x);
         Assert.assertEquals(10,y);
 //        Assert.assertEquals(true,moving);
-//        Assert.assertEquals(Dir.RIGHT,dir);
-//        Assert.assertEquals(Group.BLUE,group);
-        Assert.assertEquals(id,uuid);
+        Assert.assertEquals(Dir.RIGHT,dir);
+        Assert.assertEquals(Group.BLUE,group);
+        Assert.assertEquals(id,id2);
+        Assert.assertEquals(playerID,playerID2);
     }
 
     @Test
     void decode() {
         EmbeddedChannel ch = new EmbeddedChannel();
 
+        UUID playerID = UUID.randomUUID();
         UUID id = UUID.randomUUID();
-        //Msg msg = new TankJoinMsg(5,10, Dir.RIGHT,true, Group.BLUE,id);
-        Msg msg = new TankStopMsg(id, 5,10);
+        Msg msg = new BulletNewMsg(playerID, id, 5,10, Dir.RIGHT,Group.BLUE);
         ch.pipeline().addLast(new MsgDecoder());
 
         ByteBuf buf = Unpooled.buffer();
@@ -59,13 +64,14 @@ class MsgDecoderTest {
 
         ch.writeInbound(buf.duplicate());
 //        TankJoinMsg msgR = ch.readInbound();
-        TankStopMsg msgR = ch.readInbound();
+        BulletNewMsg msgR = ch.readInbound();
 
         Assert.assertEquals(5,msgR.getX());
         Assert.assertEquals(10,msgR.getY());
 //        Assert.assertEquals(true,msgR.isMoving());
-//        Assert.assertEquals(Dir.RIGHT,msgR.getDir());
-//        Assert.assertEquals(Group.BLUE,msgR.getGroup());
+        Assert.assertEquals(Dir.RIGHT,msgR.getDir());
+        Assert.assertEquals(Group.BLUE,msgR.getGroup());
         Assert.assertEquals(id,msgR.getId());
+        Assert.assertEquals(playerID,msgR.getPlayerID());
     }
 }

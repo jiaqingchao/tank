@@ -2,8 +2,9 @@ package com.jqc.tank.bean;
 
 import com.jqc.tank.TankFrame;
 import com.jqc.tank.common.*;
+import com.jqc.tank.net.BulletNewMsg;
+import com.jqc.tank.net.Client;
 import com.jqc.tank.net.TankJoinMsg;
-import com.jqc.tank.strategy.FireStrategy;
 
 import java.awt.*;
 import java.util.Random;
@@ -21,19 +22,16 @@ public class Tank {
     private boolean living = true;
     private Group group;
 
-    private TankFrame tf;
     private Rectangle rectangle = new Rectangle();
     private Random random = new Random();
 
-    private FireStrategy fs = null;
     private UUID id = UUID.randomUUID();//正式的环境应该在服务器上生成
 
-    public Tank(int x, int y, Dir dir, Group group, TankFrame tf) {
+    public Tank(int x, int y, Dir dir, Group group) {
         this.x = x;
         this.y = y;
         this.dir = dir;
         this.group = group;
-        this.tf = tf;
         if(this.group == Group.AI){
             this.moving = true;
         }
@@ -85,10 +83,6 @@ public class Tank {
         this.y = y;
     }
 
-    public TankFrame getTf() {
-        return tf;
-    }
-
     public boolean isLiving() {
         return living;
     }
@@ -107,16 +101,12 @@ public class Tank {
         int eX = this.getX() + Tank.WIDTH/2 - Explode.WIDTH/2;
         int eY = this.getY() + Tank.HEIGHT/2 - Explode.HEIGHT/2;
 
-        tf.explodes.add(new Explode(eX, eY));
+        TankFrame.INSTANCE.explodes.add(new Explode(eX, eY));
     }
 
     public void paint(Graphics g) {
         paintTank(g);
-
-        randomFireAndDir();
-
         move();
-
     }
 
     private void paintTank(Graphics g) {
@@ -132,54 +122,6 @@ public class Tank {
                 break;
             case DOWN:
                 g.drawImage(this.group == Group.RED ? ResourceMgr.redTankD : ResourceMgr.aiTankD, this.x, this.y,null);
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void randomFireAndDir() {
-        if(this.group != Group.AI){
-            return;
-        }
-
-        // AI 随机发射子弹
-        if(random.nextInt(100) > 95){
-            if(fs == null){
-                initFireStrategy();
-            }
-            fs.fire(this);
-        }
-
-        //AI 随机改变方向
-        if(random.nextInt(100) > 95){
-            randomDir();
-        }
-    }
-
-    private void initFireStrategy() {
-        String defaultFSName = PropertyMgr.getString(CONSTANTS.PROPERTY_DEFAULT_FIRE);
-        try {
-            fs = (FireStrategy) Class.forName(defaultFSName).getMethod("getInstance").invoke(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void randomDir() {
-        int randomNum = random.nextInt(4);
-        switch (randomNum){
-            case 0 :
-                dir = Dir.UP;
-                break;
-            case 1 :
-                dir = Dir.DOWN;
-                break;
-            case 2:
-                dir = Dir.LEFT;
-                break;
-            case 3:
-                dir = Dir.RIGHT;
                 break;
             default:
                 break;
@@ -230,5 +172,41 @@ public class Tank {
 
     public void setMoving(boolean moving) {
         this.moving = moving;
+    }
+
+    public void fire() {
+        int bX = 0;
+        int bY = 0;
+
+        switch (this.getDir()){
+            case DOWN:
+                bY = this.getY() + Tank.HEIGHT;
+                bX = this.getX() + Tank.WIDTH/2 - Bullet.WIDTH/2;
+                break;
+            case UP:
+                bY = this.getY() - Bullet.HEIGHT;
+                bX = this.getX() + Tank.WIDTH/2 - Bullet.WIDTH/2;
+                break;
+            case LEFT:
+                bY = this.getY() + Tank.HEIGHT/2 - Bullet.HEIGHT/2;
+                bX = this.getX() - Bullet.WIDTH;
+                break;
+            case RIGHT:
+                bX = this.getX() + Tank.WIDTH;
+                bY = this.getY() + Tank.HEIGHT/2 - Bullet.HEIGHT/2;
+                break;
+            default:
+                break;
+        }
+
+        Bullet b = new Bullet(this.getId(), bX, bY, this.getDir(), this.getGroup());
+
+        TankFrame.INSTANCE.addBullet(b);
+
+        Client.INSTANCE.send(new BulletNewMsg(b));
+
+        if(this.getId().equals(TankFrame.INSTANCE.getMainTank().getId())){
+            new Thread(()->new Audio("audio/tank_fire.wav").play()).start();
+        }
     }
 }

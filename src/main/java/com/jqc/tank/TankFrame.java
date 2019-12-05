@@ -8,9 +8,9 @@ import com.jqc.tank.common.Dir;
 import com.jqc.tank.common.Group;
 import com.jqc.tank.common.PropertyMgr;
 import com.jqc.tank.net.Client;
+import com.jqc.tank.net.TankDirChangedMsg;
 import com.jqc.tank.net.TankStartMovingMsg;
 import com.jqc.tank.net.TankStopMsg;
-import com.jqc.tank.strategy.SquareFireStrategy;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -30,10 +30,10 @@ public class TankFrame extends Frame {
     Random r = new Random();
 
     public Map<UUID,Tank> tanks = new HashMap<>();
-    public List<Bullet> bullets = new ArrayList<>();
+    public Map<UUID,Bullet> bullets = new HashMap<>();
     public List<Explode> explodes = new ArrayList<>();
 
-    Tank redTank = new Tank(r.nextInt(WIDTH),r.nextInt(HEIGHT),Dir.DOWN, Group.RED, this);
+    Tank redTank = new Tank(r.nextInt(WIDTH),r.nextInt(HEIGHT),Dir.DOWN, Group.RED);
 //    Tank redTank = new Tank(100,100,Dir.DOWN, Group.RED, this);
 
     private TankFrame(){
@@ -97,7 +97,7 @@ public class TankFrame extends Frame {
         g.drawString("GAME OVER", WIDTH / 2 - 50, HEIGHT / 2 - 10);
         g.setColor(c);
         explodes.removeAll(explodes);
-        bullets.removeAll(bullets);
+        bullets.clear();
         tanks.clear();
     }
 
@@ -121,44 +121,37 @@ public class TankFrame extends Frame {
     }
 
     private void paintBullet(Graphics g) {
-        for(int i = 0; i < bullets.size(); i++){
-            Bullet bullet = bullets.get(i);
-            bullet.paint(g);
-            if(!bullet.isLiving()){
-                bullets.remove(i--);
+        Set<UUID> ids = bullets.keySet();
+        Iterator<UUID> it = ids.iterator();
+        while (it.hasNext()){
+            UUID id = it.next();
+            Bullet b = bullets.get(id);
+            b.paint(g);
+            if(!b.isLiving()){
+                it.remove();
             }
         }
     }
 
     private void paintTank(Graphics g) {
-        Collection<Tank> tankList = tanks.values();
-        Iterator<Tank> iterator = tankList.iterator();
-        while(iterator.hasNext()){
-            Tank tank = iterator.next();
+        Set<UUID> ids = tanks.keySet();
+        Iterator<UUID> it = ids.iterator();
+        while(it.hasNext()){
+            UUID id = it.next();
+            Tank tank = tanks.get(id);
             tank.paint(g);
             if(!tank.isLiving()){
-                tanks.remove(tank);
+                it.remove();
             }
         }
-
-//        for (Tank tank : tanks.values()) {
-//            tank.paint(g);
-//            tanks.remove(tank);
-//        }
-//        tanks.values().stream().forEach((tank)->{
-//            tank.paint(g);
-//            tanks.remove(tank);
-//        });
     }
 
     private void collisonCheck() {
-        for(ListIterator<Bullet> bulletIterator = bullets.listIterator(); bulletIterator.hasNext();){
-            Bullet bullet = bulletIterator.next();
+        for(Bullet bullet : bullets.values()){
             bullet.collisionWidth(redTank);
-            for(UUID id : tanks.keySet()){
-                bullet.collisionWidth(tanks.get(id));
+            for(Tank tank : tanks.values()){
+                bullet.collisionWidth(tank);
             }
-
         }
     }
     public Tank getMainTank(){
@@ -168,9 +161,18 @@ public class TankFrame extends Frame {
     public void addTank(Tank t) {
         tanks.put(t.getId(), t);
     }
+    public void addBullet(Bullet b) {
+        bullets.put(b.getId(), b);
+    }
+    public void addExplode(Explode e) {
+        explodes.add(e);
+    }
 
-    public Tank findByUUID(UUID id) {
+    public Tank findTankByUUID(UUID id) {
         return tanks.get(id);
+    }
+    public Bullet findBulletByUUID(UUID id) {
+        return bullets.get(id);
     }
 
     class MyKeyListener extends KeyAdapter{
@@ -219,7 +221,7 @@ public class TankFrame extends Frame {
                     bD = false;
                     break;
                 case KeyEvent.VK_SPACE:
-                    SquareFireStrategy.getInstance().fire(redTank);
+                    redTank.fire();
                 default:
                     break;
             }
@@ -232,6 +234,7 @@ public class TankFrame extends Frame {
                 Client.INSTANCE.send(new TankStopMsg(getMainTank()));
                 return;
             }
+            Dir oldDir = tank.getDir();
             if(bL){
                 tank.setDir(Dir.LEFT);
             }
@@ -248,6 +251,11 @@ public class TankFrame extends Frame {
                 Client.INSTANCE.send(new TankStartMovingMsg(getMainTank()));
             }
             tank.setMoving(true);
+
+            if(!redTank.getDir().equals(oldDir)){
+                Client.INSTANCE.send(new TankDirChangedMsg(getMainTank()));
+            }
+
         }
     }
 

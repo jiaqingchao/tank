@@ -7,30 +7,27 @@ import com.jqc.tank.common.Dir;
 import java.io.*;
 import java.util.UUID;
 
-public class TankStartMovingMsg extends Msg{
-    UUID id;
-    int x,y;
+public class TankDirChangedMsg extends Msg{
+
+    int x, y;
     Dir dir;
+    public UUID id;
 
-    public TankStartMovingMsg() {
+    public TankDirChangedMsg() {
     }
 
-    public TankStartMovingMsg(UUID id, int x, int y, Dir dir) {
-        this.id = id;
-        this.x = x;
-        this.y = y;
-        this.dir = dir;
-    }
-
-    public TankStartMovingMsg(Tank tank) {
-        this.id = tank.getId();
+    public TankDirChangedMsg(Tank tank) {
         this.x = tank.getX();
         this.y = tank.getY();
         this.dir = tank.getDir();
+        this.id = tank.getId();
     }
 
-    public UUID getId() {
-        return id;
+    public TankDirChangedMsg( UUID id ,int x, int y, Dir dir) {
+        this.x = x;
+        this.y = y;
+        this.dir = dir;
+        this.id = id;
     }
 
     public int getX() {
@@ -45,18 +42,8 @@ public class TankStartMovingMsg extends Msg{
         return dir;
     }
 
-    @Override
-    public void handle() {
-        if(this.id.equals(TankFrame.INSTANCE.getMainTank().getId())){
-            return;
-        }
-        Tank t = TankFrame.INSTANCE.findTankByUUID(this.id);
-        if(t != null){
-            t.setMoving(true);
-            t.setX(this.x);
-            t.setY(this.y);
-            t.setDir(this.dir);
-        }
+    public UUID getId() {
+        return id;
     }
 
     @Override
@@ -101,6 +88,7 @@ public class TankStartMovingMsg extends Msg{
         DataInputStream dis = new DataInputStream(bais);
 
         try {
+
             this.x = dis.readInt();
             this.y = dis.readInt();
             this.dir = Dir.values()[dis.readInt()];
@@ -128,16 +116,30 @@ public class TankStartMovingMsg extends Msg{
 
     @Override
     public String toString() {
-        return "TankStartMovingMsg{" +
-                "id=" + id +
-                ", x=" + x +
+        return "TankDirChangedMsg{" +
+                "x=" + x +
                 ", y=" + y +
                 ", dir=" + dir +
+                ", id=" + id +
                 '}';
     }
 
     @Override
+    public void handle() {
+        if(this.id.equals(TankFrame.INSTANCE.getMainTank().getId())){
+            return;
+        }
+
+        Tank t = TankFrame.INSTANCE.findTankByUUID(id);
+        if(t != null){
+            t.setX(this.x);
+            t.setY(this.y);
+            t.setDir(this.dir);
+        }
+    }
+
+    @Override
     public MsgType getMsgType() {
-        return MsgType.TankStartMoving;
+        return MsgType.TankDirChanged;
     }
 }

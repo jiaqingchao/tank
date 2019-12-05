@@ -2,9 +2,11 @@ package com.jqc.tank.bean;
 
 import com.jqc.tank.TankFrame;
 import com.jqc.tank.common.*;
+import com.jqc.tank.net.Client;
+import com.jqc.tank.net.TankDieMsg;
 
-import java.awt.Rectangle;
-import java.awt.Graphics;
+import java.awt.*;
+import java.util.UUID;
 
 
 public class Bullet {
@@ -21,7 +23,11 @@ public class Bullet {
 
     private Rectangle rectangle = new Rectangle();
 
-    public Bullet(int x, int y, Dir dir, Group group, TankFrame tf) {
+    private UUID id = UUID.randomUUID();
+    private UUID playerID;
+
+    public Bullet(UUID playerID, int x, int y, Dir dir, Group group) {
+        this.playerID = playerID;
         this.x = x;
         this.y = y;
         this.dir = dir;
@@ -31,15 +37,13 @@ public class Bullet {
         rectangle.y = this.y;
         rectangle.width = Tank.WIDTH;
         rectangle.height = Tank.HEIGHT;
-
-        tf.bullets.add(this);
     }
 
     public boolean isLiving() {
         return living;
     }
 
-    private void die() {
+    public void die() {
         this.living = false;
     }
 
@@ -51,6 +55,30 @@ public class Bullet {
         paintBullet(g);
         move();
 
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public Dir getDir() {
+        return dir;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getPlayerID() {
+        return playerID;
     }
 
     private void paintBullet(Graphics g) {
@@ -109,7 +137,7 @@ public class Bullet {
 
     public void collisionWidth(Tank tank) {
 
-        if(this.group == tank.getGroup()){
+        if(this.playerID.equals(tank.getId())){
             return;
         }
 
@@ -119,6 +147,11 @@ public class Bullet {
         if(bulletRect.intersects(tankRect)){
             this.die();
             tank.die();
+            Client.INSTANCE.send(new TankDieMsg(tank.getId(),this.id));
         }
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }
